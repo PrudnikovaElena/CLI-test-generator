@@ -1,7 +1,8 @@
 import json
 import time
+import random
 
-#function to enter questions and answers and save them to json file
+#function to enter questions and answers 
 
 def test_input():
     data_dict = {}
@@ -29,27 +30,52 @@ def test_save(data_dict):
 
 #function to open json file and load questions
 def test_open():
-    with open ("test_data.json", "r", encoding="utf-8")as json_file:
+    with open ("test_data.json", "r", encoding="utf-8") as json_file:
             return json.load(json_file)
 
-#function to shuffle answers
-        
+#function to shuffle questions
+def questions_shuffle(load_test):
+    qa_pairs = list(load_test.items())
+    random.shuffle(qa_pairs)
+    return qa_pairs
+             
 
-#fuction to print questions and answers with timesleep
-#need to add the ability to enter and save answers
+#fuction to run the test: print questions without shuffling and allow user to enter answers
         
 def test_print(load_test):
-    
+    answers_list = []
     val = list(load_test.values())
     keys = list(load_test.keys())
     for i in range (len(load_test)):
         print(f"{i+1}. {keys[i]}")
         print(f"{",".join(val[i])}")
+        answer_user = input("Enter your answer to the question: ")
+        answers_list.append(answer_user)
         time.sleep(1)
-    
+    return answers_list
 
-        
+#function to run the test after shuffling
+def test_shuffled_print(shuffled_test):
+    answers_list = []
+    for i, (question, answer) in enumerate(shuffled_test, 1):
+         print(f"{i}. {question}")
+         print(f"{",".join(answer)}")
+         answer_user = input("Enter your answer to the question: ")
+         answers_list.append(answer_user)
+    return answers_list
+
+#function to save user answers to json file
+def save_answer_user(answers_list):
+     with open("answers_list.json", "w", encoding="utf-8") as json_file:
+          return json.dump(answers_list, json_file, indent=4, ensure_ascii=False)
+
+
+
 data = test_input()
 test_save(data)
 load_test = test_open()
-test_print(load_test)
+shuffled_test = questions_shuffle(load_test)
+answers_list = test_print(load_test)
+answers_list1 = test_shuffled_print(shuffled_test)
+save_answer_user(answers_list)
+save_answer_user(answers_list1)
