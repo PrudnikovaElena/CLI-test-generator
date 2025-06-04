@@ -2,7 +2,7 @@ import json
 import time
 import random
 
-#function to enter questions and answers 
+#function to enter questions and answers, save test to json file
 
 def test_input():
     data_dict = {}
@@ -17,8 +17,15 @@ def test_input():
         answer_input = input("Enter answers (separated by comma): ")
         answers_list = answer_input.split(",")
         data_dict[question_input] = answers_list
+    
+    save_test = input("Do you want to save the test to json file(yes/no?) ")
+   
+    if save_test == "yes":
+        test_save(data_dict)
+    else:
+        return data_dict
 
-    return data_dict
+
 
 #function to save test to json file
 def test_save(data_dict):
@@ -33,36 +40,44 @@ def test_open():
     with open ("test_data.json", "r", encoding="utf-8") as json_file:
             return json.load(json_file)
 
-#function to shuffle questions
-def questions_shuffle(load_test):
-    qa_pairs = list(load_test.items())
-    random.shuffle(qa_pairs)
-    return qa_pairs
+
              
 
-#fuction to run the test: print questions without shuffling and allow user to enter answers
-        
+#fuction to run the test: print questions, offer shuffling and allow user to enter answers
+   
 def test_print(load_test):
+    
     answers_list = []
-    val = list(load_test.values())
-    keys = list(load_test.keys())
-    for i in range (len(load_test)):
-        print(f"{i+1}. {keys[i]}")
-        print(f"{",".join(val[i])}")
-        answer_user = input("Enter your answer to the question: ")
-        answers_list.append(answer_user)
-        time.sleep(1)
-    return answers_list
 
-#function to run the test after shuffling
-def test_shuffled_print(shuffled_test):
-    answers_list = []
-    for i, (question, answer) in enumerate(shuffled_test, 1):
-         print(f"{i}. {question}")
-         print(f"{",".join(answer)}")
-         answer_user = input("Enter your answer to the question: ")
-         answers_list.append(answer_user)
-    return answers_list
+    shuffle_user = input("Do you want to shuffle questions before displaying the test (yes/no)?: ")
+
+    if shuffle_user == "no":
+        val = list(load_test.values())
+        keys = list(load_test.keys())
+        for i in range (len(load_test)):
+            print(f"{i+1}. {keys[i]}")
+            print(f"{",".join(val[i])}")
+            answer_user = input("Enter your answer to the question: ")
+            answers_list.append(answer_user)
+            time.sleep(1)
+
+    elif shuffle_user == "yes":
+        qa_pairs = list(load_test.items())
+        random.shuffle(qa_pairs)   
+
+        for i, (question, answer) in enumerate(qa_pairs, 1):
+            print(f"{i}. {question}")
+            print(f"{",".join(answer)}")
+            answer_user = input("Enter your answer to the question: ")
+            time.sleep(1)
+            answers_list.append(answer_user)
+    
+    save_option = input("Do you want to save the answers to json file (yes/no)? ")
+    if save_option == "yes":
+        save_answer_user(answers_list)
+    else:
+        return answers_list
+
 
 #function to save user answers to json file
 def save_answer_user(answers_list):
@@ -74,8 +89,15 @@ def save_answer_user(answers_list):
 data = test_input()
 test_save(data)
 load_test = test_open()
-shuffled_test = questions_shuffle(load_test)
 answers_list = test_print(load_test)
-answers_list1 = test_shuffled_print(shuffled_test)
-save_answer_user(answers_list)
-save_answer_user(answers_list1)
+
+
+
+#interface
+print("This is interactive test generator.")
+print("Choose one of the options below:  ")
+# 1 - create test
+# 2 - load test from the file 
+# 3 - take the test
+
+ 
